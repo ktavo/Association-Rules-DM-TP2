@@ -3,13 +3,16 @@
 rm(list=ls())
 setwd("E:/UBA/Data Mining/TP2")
 
-library(plyr)
+library("plyr")
+library("qdap")
+library("corpus")
+
 
 sharksData <- read.csv(file="Shark_Attack_Data.csv", header=TRUE, sep=",")
 glimpse(sharksData)
 
 #Variables seleccionadas para el estudio
-selectedVariables = c("Case.Number", "Date", "Year", "Type", "Country", "Area", "Activity",
+selectedVariables = c("Case.Number", "Date", "Year", "Type", "Country", "Activity",
                   "Sex", "Age", "Injury", "Fatal..Y.N.", "Time", "Species")
 sharksData <- sharksData[selectedVariables]
 
@@ -147,9 +150,54 @@ levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 30 &
                          !is.na(as.numeric(levels(sharksData$Age)))] <- "Adult"
 levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 49 &
                          !is.na(as.numeric(levels(sharksData$Age)))] <- "Elderly"
-levels(sharksData$Age)
 
 
+#Solving incapacity to spell
+levels(sharksData$Country)[levels(sharksData$Country) == "COLUMBIA"] <- "COLOMBIA"
+
+levels(sharksData$Type)
+sharksData$Month <- "Undefined"
+
+
+sharksData$Month[grepl("Jan" , sharksData$Date)] <- "January"
+sharksData$Month[grepl("Feb" , sharksData$Date)] <- "February"
+sharksData$Month[grepl("Mar" , sharksData$Date)] <- "March"
+sharksData$Month[grepl("Apr" , sharksData$Date)] <- "April"
+sharksData$Month[grepl("May" , sharksData$Date)] <- "May"
+sharksData$Month[grepl("Jun" , sharksData$Date)] <- "June"
+
+sharksData$Month[grepl("Jul" , sharksData$Date)] <- "July"
+sharksData$Month[grepl("Aug" , sharksData$Date)] <- "August"
+sharksData$Month[grepl("Sep" , sharksData$Date)] <- "September"
+sharksData$Month[grepl("Oct" , sharksData$Date)] <- "October"
+sharksData$Month[grepl("Nov" , sharksData$Date)] <- "November"
+sharksData$Month[grepl("Dec" , sharksData$Date)] <- "December"
+
+nrow(sharksData[sharksData$month == "Undefined",])
+
+selectedVariables = c("Year", "Month", "Type", "Country", "Activity",
+                      "Sex", "Age", "Injury", "Fatal..Y.N.", "Time", "Species")
+sharksData <- sharksData[selectedVariables]
+
+sharksData$Month<-as.factor(sharksData$Month)
+
+
+
+
+###################################################################
+frequent_terms_Injuries <- freq_terms(sharksData$Injury, 20)
+plot(frequent_terms_Injuries)
+
+frequent_terms_Area <- freq_terms(sharksData$Area, 20)
+plot(frequent_terms_Area)
+
+frequent_terms_Species <- freq_terms(sharksData$Species, 20)
+plot(frequent_terms_Species)
+###################################################################
+
+#rm(frequent_terms_Injuries)
+#rm(frequent_terms_Area)
+#rm(frequent_terms_Species)
 
 
 ####VAriabbles a transformar
@@ -158,10 +206,11 @@ levels(sharksData$Age)
 #Maybe Country -> Per continent?
 #Area -> Demasiada cardinalidad
 #Actividad -> demasiada cardinalidad
-#Age -> Agrupar en rangos de edad [Baby{0-4}, Kid{5-13}, Teen{14-18}, Young{19-30} , Adult{31-49}, Elderly{50-100}]
-# Baby 0-4, Kid
 #Time -> Agrupar en rangos [Madrugada, Mañana, Medio dia, tarde, noche]
 #Species -> Text para entcontar especies de tiburones
+
+
+
 
 
 
