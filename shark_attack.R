@@ -129,12 +129,26 @@ levels(sharksData$Age)[levels(sharksData$Age) == "28, 23 & 30"] <- "27"
 levels(sharksData$Age)[levels(sharksData$Age) == "21, 34,24 & 35"] <- "29"
 levels(sharksData$Age)[levels(sharksData$Age) == "37, 67, 35, 27,  ? & 27"] <- "39"
 levels(sharksData$Age)[levels(sharksData$Age) == "7      &    31"] <- "7"
+
+#[Baby{0-4}, Kid{5-13}, Teen{14-18}, Young{19-30} , Adult{31-49}, Elderly{50-100}]
+levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) < 5 & 
+                         !is.na(as.numeric(levels(sharksData$Age)))] <- "Baby"
+levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 4 & 
+                         as.numeric(levels(sharksData$Age)) < 14 &
+                         !is.na(as.numeric(levels(sharksData$Age)))] <- "Kid"
+levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 13 & 
+                         as.numeric(levels(sharksData$Age)) < 19 &
+                         !is.na(as.numeric(levels(sharksData$Age)))] <- "Teen"
+levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 18 & 
+                         as.numeric(levels(sharksData$Age)) < 31 &
+                         !is.na(as.numeric(levels(sharksData$Age)))] <- "Young"
+levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 30 & 
+                         as.numeric(levels(sharksData$Age)) < 50 &
+                         !is.na(as.numeric(levels(sharksData$Age)))] <- "Adult"
+levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 49 &
+                         !is.na(as.numeric(levels(sharksData$Age)))] <- "Elderly"
 levels(sharksData$Age)
 
-
-levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) < 5]
-
-#levels(sharksData$Age)[!is.na(levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) < 5])] <- "Baby"
 
 
 
