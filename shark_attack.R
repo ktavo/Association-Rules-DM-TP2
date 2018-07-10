@@ -219,8 +219,6 @@ for (i in 1:5897)
 
 
 ###################################################################
-
-
 injuriesStopWords <- c("bitten", "fatal", "shark", "bit", "occupants", "sharks", "injury", "minor",
                        "survived", "recovered", "injured", "body", "injuries", "remains", "death",
                        "involvement", "taken","occupant")
@@ -228,7 +226,27 @@ injuriesStopWords <- c(stopwords_en, injuriesStopWords)
 
 frequent_terms_Injuries <- freq_terms(sharksData$Injury, 35, stopwords = injuriesStopWords)
 plot(frequent_terms_Injuries)
-frequent_terms_Injuries
+
+
+levels(sharksData$Injury) <- tolower(levels(sharksData$Injury))
+frequent_injuries <- sapply(frequent_terms_Injuries["WORD"], as.character)
+
+sharksData$SharkInjury <- c("")
+for (i in 1:5897)
+{
+  injuriesText <- as.character(sharksData[[8]][i])
+  print(injuriesText)
+  for (j in 1:35)
+  {
+    if (grepl(frequent_injuries[j],injuriesText))
+    {
+      print("gotcha")
+      print(frequent_injuries[j])
+      sharksData[[13]][i] <- paste(sharksData[[13]][i],frequent_injuries[j])
+    }
+  }
+  print("**************************")
+}
 ###################################################################
 
 
@@ -239,6 +257,10 @@ frequent_terms_Injuries
 #Species -> Text para entcontar especies de tiburones
 
 
+write.table(trainTreeDataFrame, file = "trainTreeData.csv",row.names=FALSE, na="",
+            col.names=c("created_at", "retweet_count","favorite_count", "is_quote","reply_to_screen_name",
+                        "source", "favourites_count", "followers_count","friends_count",
+                        "listed_count", "statuses_count", "verified", "popular"), sep=",")
 
 
 
