@@ -7,6 +7,7 @@ library("plyr")
 library("qdap")
 library("corpus")
 library("stringr")
+library("arules")
 
 
 sharksData <- read.csv(file="Shark_Attack_Data.csv", header=TRUE, sep=",")
@@ -257,14 +258,29 @@ for (i in 1:5897)
 #Species -> Text para entcontar especies de tiburones
 
 
-write.table(trainTreeDataFrame, file = "trainTreeData.csv",row.names=FALSE, na="",
-            col.names=c("created_at", "retweet_count","favorite_count", "is_quote","reply_to_screen_name",
-                        "source", "favourites_count", "followers_count","friends_count",
-                        "listed_count", "statuses_count", "verified", "popular"), sep=",")
+
+selectedVariables = c("Year", "Month", "Type", "Country", "Activity",
+                      "Sex", "Age", "SharkInjury", "Fatal..Y.N.", "Time", "SharkSpecie")
+sharksData <- sharksData[selectedVariables]
+sharksData$Month<-as.factor(sharksData$Month)
+sharksData$Year<-as.factor(sharksData$Year)
+sharksData$SharkInjury<-as.factor(sharksData$SharkInjury)
+sharksData$SharkSpecie<-as.factor(sharksData$SharkSpecie)
 
 
 
+#write.table(trainTreeDataFrame, file = "trainTreeData.csv",row.names=FALSE, na="",
+#            col.names=c("created_at", "retweet_count","favorite_count", "is_quote","reply_to_screen_name",
+#                        "source", "favourites_count", "followers_count","friends_count",
+#                        "listed_count", "statuses_count", "verified", "popular"), sep=",")
 
+
+########################################Generating Rules#################################################
+rm(reglas)
+reglas <- apriori(sharksData, parameter = list(support=0.4, confidence=0.4, target = "rules"),
+                  appearance=list(rhs='Fatal..Y.N.=N',default='lhs'))
+print(reglas)
+inspect(reglas)
 
 
 
