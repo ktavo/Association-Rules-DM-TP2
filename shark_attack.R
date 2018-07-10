@@ -6,6 +6,7 @@ setwd("E:/UBA/Data Mining/TP2")
 library("plyr")
 library("qdap")
 library("corpus")
+library("stringr")
 
 
 sharksData <- read.csv(file="Shark_Attack_Data.csv", header=TRUE, sep=",")
@@ -177,9 +178,6 @@ sharksData$Month<-as.factor(sharksData$Month)
 
 ###################################################################
 levels(sharksData$Species)
-
-rm(speciesStopWords)
-
 speciesStopWords <- c("shark", "m", "lb", "small" ,"involvement", "confirmed", "sharks", "involve", 
                       "small", "possibly", "kg", "thought", "identified", "recovered","species", "cm",
                       "oceanic", "fragment", "c", "caught", "female", "juvenile","said", "prior", "death",
@@ -190,8 +188,32 @@ speciesStopWords <- c("shark", "m", "lb", "small" ,"involvement", "confirmed", "
 speciesStopWords <- c(stopwords_en, speciesStopWords)
 
 frequent_terms_Species <- freq_terms(sharksData$Species, 35, stopwords = speciesStopWords)
-#frequent_terms_Species <- freq_terms(sharksData$Species, 40, stopwords = speciesStopWords)
 plot(frequent_terms_Species)
+
+#sharksData$SharkSpecie[grepl(frequent_terms_Species , sharksData$Species)] <- frequent_terms_Species
+#stringedFrequentTerms <- toString(paste(sapply(frequent_terms_Species["WORD"], as.character)))
+#stringedFrequentTerms <- str_replace_all(stringedFrequentTerms, ", ", "|")
+#matches <- grepl(stringedFrequentTerms,sharksData$Species)
+
+levels(sharksData$Species) <- tolower(levels(sharksData$Species))
+frequent_species <- sapply(frequent_terms_Species["WORD"], as.character)
+
+sharksData$SharkSpecie <- c("")
+for (i in 1:5897)
+{
+  speciesText <- as.character(sharksData[[11]][i])
+  print(speciesText)
+  for (j in 1:35)
+  {
+    if (grepl(frequent_species[j],speciesText))
+    {
+      print("gotcha")
+      print(frequent_species[j])
+      sharksData[[12]][i] <- paste(sharksData[[12]][i],frequent_species[j])
+    }
+  }
+  print("**************************")
+}
 ###################################################################
 
 
@@ -201,16 +223,9 @@ frequent_terms_Injuries <- freq_terms(sharksData$Injury, 50, stopwords = stopwor
 plot(frequent_terms_Injuries)
 ###################################################################
 
-#rm(frequent_terms_Injuries)
-#rm(frequent_terms_Area)
-#rm(frequent_terms_Species)
 
 
 ####VAriabbles a transformar
-##Añadir transformaciones pasadas al documento
-#Case.number + date -> month
-#Maybe Country -> Per continent?
-#Area -> Demasiada cardinalidad
 #Actividad -> demasiada cardinalidad
 #Time -> Agrupar en rangos [Madrugada, Mañana, Medio dia, tarde, noche]
 #Species -> Text para entcontar especies de tiburones
