@@ -219,8 +219,16 @@ for (i in 1:5897)
 
 
 ###################################################################
-frequent_terms_Injuries <- freq_terms(sharksData$Injury, 50, stopwords = stopwords_en)
+
+
+injuriesStopWords <- c("bitten", "fatal", "shark", "bit", "occupants", "sharks", "injury", "minor",
+                       "survived", "recovered", "injured", "body", "injuries", "remains", "death",
+                       "involvement", "taken","occupant")
+injuriesStopWords <- c(stopwords_en, injuriesStopWords)
+
+frequent_terms_Injuries <- freq_terms(sharksData$Injury, 35, stopwords = injuriesStopWords)
 plot(frequent_terms_Injuries)
+frequent_terms_Injuries
 ###################################################################
 
 
