@@ -38,17 +38,6 @@ levels(sharksData$Sex)[levels(sharksData$Sex) == "N"] <- "Unknown"
 levels(sharksData$Sex)[levels(sharksData$Sex) == "lli"] <- "Unknown"
 levels(sharksData$Sex)
 
-
-#Transformación Fatal..Y.N
-levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == ""] <- "Unknown"
-levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == " N"] <- "N"
-levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == "F"] <- "N"
-levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == "N "] <- "N"
-levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == "UNKNOWN"] <- "Unknown"
-levels(sharksData$Fatal..Y.N.)
-
-
-
 #Transformación Age
 #[Baby{0-4}, Kid{5-13}, Teen{14-18}, Young{19-30} , Adult{31-49}, Elderly{50-100}]
 levels(sharksData$Age)[levels(sharksData$Age) == ""] <- "Unknown"
@@ -133,7 +122,7 @@ levels(sharksData$Age)[levels(sharksData$Age) == "21, 34,24 & 35"] <- "29"
 levels(sharksData$Age)[levels(sharksData$Age) == "37, 67, 35, 27,  ? & 27"] <- "39"
 levels(sharksData$Age)[levels(sharksData$Age) == "7      &    31"] <- "7"
 
-#[Baby{0-4}, Kid{5-13}, Teen{14-18}, Young{19-30} , Adult{31-49}, Elderly{50-100}]
+#[Baby{0-4}, Kid{5-13}, Teen{14-18}, Young{19-30} , Adult{31-49}, Elderly{>50}]
 levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) < 5 & 
                          !is.na(as.numeric(levels(sharksData$Age)))] <- "Baby"
 levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 4 & 
@@ -152,20 +141,26 @@ levels(sharksData$Age)[as.numeric(levels(sharksData$Age)) > 49 &
                          !is.na(as.numeric(levels(sharksData$Age)))] <- "Elderly"
 
 
+#Transformación Fatal..Y.N
+levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == ""] <- "Unknown"
+levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == " N"] <- "N"
+levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == "F"] <- "N"
+levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == "N "] <- "N"
+levels(sharksData$Fatal..Y.N.)[levels(sharksData$Fatal..Y.N.) == "UNKNOWN"] <- "Unknown"
+levels(sharksData$Fatal..Y.N.)
+
+
 #Solving incapacity to spell
 levels(sharksData$Country)[levels(sharksData$Country) == "COLUMBIA"] <- "COLOMBIA"
 
 levels(sharksData$Type)
 sharksData$Month <- "Undefined"
-
-
 sharksData$Month[grepl("Jan" , sharksData$Date)] <- "January"
 sharksData$Month[grepl("Feb" , sharksData$Date)] <- "February"
 sharksData$Month[grepl("Mar" , sharksData$Date)] <- "March"
 sharksData$Month[grepl("Apr" , sharksData$Date)] <- "April"
 sharksData$Month[grepl("May" , sharksData$Date)] <- "May"
 sharksData$Month[grepl("Jun" , sharksData$Date)] <- "June"
-
 sharksData$Month[grepl("Jul" , sharksData$Date)] <- "July"
 sharksData$Month[grepl("Aug" , sharksData$Date)] <- "August"
 sharksData$Month[grepl("Sep" , sharksData$Date)] <- "September"
@@ -178,21 +173,32 @@ nrow(sharksData[sharksData$month == "Undefined",])
 selectedVariables = c("Year", "Month", "Type", "Country", "Activity",
                       "Sex", "Age", "Injury", "Fatal..Y.N.", "Time", "Species")
 sharksData <- sharksData[selectedVariables]
-
 sharksData$Month<-as.factor(sharksData$Month)
 
+###################################################################
+levels(sharksData$Species)
+
+rm(speciesStopWords)
+
+speciesStopWords <- c("shark", "m", "lb", "small" ,"involvement", "confirmed", "sharks", "involve", 
+                      "small", "possibly", "kg", "thought", "identified", "recovered","species", "cm",
+                      "oceanic", "fragment", "c", "caught", "female", "juvenile","said", "prior", "death",
+                      "incident", "seen", "dr", "questionable", "unidentified","fragments", "later",
+                      "remains", "reported", "large", "vicinity", "witnesses","days","identity",
+                      "pattern", "based", "involved", "male", "two", "attack", "basking","captured",
+                      "found", "gut", "k", "length", "suspected", "bite", "boat", "l", "probable", "w")
+speciesStopWords <- c(stopwords_en, speciesStopWords)
+
+frequent_terms_Species <- freq_terms(sharksData$Species, 35, stopwords = speciesStopWords)
+#frequent_terms_Species <- freq_terms(sharksData$Species, 40, stopwords = speciesStopWords)
+plot(frequent_terms_Species)
+###################################################################
 
 
 
 ###################################################################
-frequent_terms_Injuries <- freq_terms(sharksData$Injury, 20)
+frequent_terms_Injuries <- freq_terms(sharksData$Injury, 50, stopwords = stopwords_en)
 plot(frequent_terms_Injuries)
-
-frequent_terms_Area <- freq_terms(sharksData$Area, 20)
-plot(frequent_terms_Area)
-
-frequent_terms_Species <- freq_terms(sharksData$Species, 20)
-plot(frequent_terms_Species)
 ###################################################################
 
 #rm(frequent_terms_Injuries)
