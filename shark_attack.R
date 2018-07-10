@@ -202,15 +202,17 @@ frequent_species <- sapply(frequent_terms_Species["WORD"], as.character)
 sharksData$SharkSpecie <- c("")
 for (i in 1:5897)
 {
+  specieAdded = FALSE
   speciesText <- as.character(sharksData[[11]][i])
   print(speciesText)
   for (j in 1:35)
   {
-    if (grepl(frequent_species[j],speciesText))
+    if ((grepl(frequent_species[j],speciesText)) & specieAdded == FALSE)
     {
       print("gotcha")
       print(frequent_species[j])
       sharksData[[12]][i] <- paste(sharksData[[12]][i],frequent_species[j])
+      specieAdded = TRUE
     }
   }
   print("**************************")
@@ -235,19 +237,23 @@ frequent_injuries <- sapply(frequent_terms_Injuries["WORD"], as.character)
 sharksData$SharkInjury <- c("")
 for (i in 1:5897)
 {
+  injuryAdded = FALSE
   injuriesText <- as.character(sharksData[[8]][i])
   print(injuriesText)
   for (j in 1:35)
   {
-    if (grepl(frequent_injuries[j],injuriesText))
+    if ((grepl(frequent_injuries[j],injuriesText)) & injuryAdded == FALSE)
     {
       print("gotcha")
       print(frequent_injuries[j])
       sharksData[[13]][i] <- paste(sharksData[[13]][i],frequent_injuries[j])
+      injuryAdded = TRUE
     }
   }
   print("**************************")
 }
+
+
 ###################################################################
 
 
@@ -274,13 +280,13 @@ sharksData$SharkSpecie<-as.factor(sharksData$SharkSpecie)
 #                        "source", "favourites_count", "followers_count","friends_count",
 #                        "listed_count", "statuses_count", "verified", "popular"), sep=",")
 
-
+rm(frequent_terms_Injuries)
+rm(frequent_terms_Species)
 ########################################Generating Rules#################################################
 rm(reglas)
-reglas <- apriori(sharksData, parameter = list(support=0.4, confidence=0.4, target = "rules"),
-                  appearance=list(rhs='Fatal..Y.N.=N',default='lhs'))
+reglas <- apriori(sharksData, parameter = list(support=0.1, confidence=0.1, target = "rules"),
+                  appearance=list(rhs='Fatal..Y.N.=Y',default='lhs'))
 print(reglas)
 inspect(reglas)
-
 
 
