@@ -266,7 +266,7 @@ for (i in 1:5897)
 
 
 selectedVariables = c("Year", "Month", "Type", "Country", "Activity",
-                      "Sex", "Age", "SharkInjury", "Fatal..Y.N.", "Time", "SharkSpecie")
+                      "Sex", "Age", "SharkInjury", "Fatal..Y.N.", "SharkSpecie")
 sharksData <- sharksData[selectedVariables]
 sharksData$Month<-as.factor(sharksData$Month)
 sharksData$Year<-as.factor(sharksData$Year)
@@ -282,11 +282,22 @@ sharksData$SharkSpecie<-as.factor(sharksData$SharkSpecie)
 
 rm(frequent_terms_Injuries)
 rm(frequent_terms_Species)
-########################################Generating Rules#################################################
-rm(reglas)
-reglas <- apriori(sharksData, parameter = list(support=0.1, confidence=0.1, target = "rules"),
-                  appearance=list(rhs='Fatal..Y.N.=Y',default='lhs'))
-print(reglas)
-inspect(reglas)
 
+levels(sharksData$SharkInjury)
+levels(sharksData$SharkSpecie)
+
+levels(sharksData$Type)
+
+########################################Generating Rules#################################################
+
+filteredSharksData <- sharksData[sharksData$SharkInjury != "",]
+filteredSharksData <- filteredSharksData[filteredSharksData$SharkSpecie != "",]
+
+
+rm(reglas)
+reglas <- apriori(filteredSharksData, parameter = list(support=0.05, confidence=0.1, target = "rules"),
+                  appearance=list(rhs='Fatal..Y.N.=N',default='lhs'))
+print(reglas)
+#inspect(reglas)
+inspect(sort(reglas, by="lift", decreasing = TRUE))
 
